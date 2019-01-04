@@ -12,6 +12,7 @@
     using FirebaseCoreAdmin.Firebase.Auth;
     using System.Threading.Tasks;
     using System.Net.Http;
+    using Configurations;
 
     public class GoogleCloudStorage : IGoogleStorage, IDisposable
     {
@@ -19,9 +20,14 @@
         private IServiceAccountCredentials _credentials;
         private IFirebaseConfiguration _firebaseConfiguration;
 
-        public GoogleCloudStorage(IFirebaseAdminAuth auth, IServiceAccountCredentials credentials)
+        public GoogleCloudStorage(IFirebaseAdminAuth auth, IServiceAccountCredentials credentials, IFirebaseConfiguration configuration)
         {
-            var firebaseConfiguration = new DefaultFirebaseConfiguration(GoogleServiceAccess.StorageOnly);
+            IFirebaseConfiguration firebaseConfiguration = new DefaultFirebaseConfiguration(GoogleServiceAccess.StorageOnly);
+            if (configuration != null)
+            {
+                firebaseConfiguration = configuration;
+            }
+
             var storageAuthority = new Uri($"{firebaseConfiguration.StorageBaseAuthority.TrimSlashes()}", UriKind.Absolute);
 
             _httpClient = new FirebaseHttpClient(credentials, firebaseConfiguration, storageAuthority);

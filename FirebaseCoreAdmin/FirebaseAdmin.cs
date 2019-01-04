@@ -5,6 +5,7 @@
     using FirebaseCoreAdmin.Firebase.Auth;
     using FirebaseCoreAdmin.Firebase.Database;
     using FirebaseCoreAdmin.Firebase.Storage;
+    using Configurations;
 
     public class FirebaseAdmin : IFirebaseAdmin, IDisposable
     {
@@ -38,6 +39,11 @@
             Initialize(credentials, access);
         }
 
+        public FirebaseAdmin(IServiceAccountCredentials credentials, GoogleServiceAccess access, IFirebaseConfiguration configuration)
+        {
+            Initialize(credentials, access, configuration);
+        }
+
         #endregion
 
         #region IDisposable Methods
@@ -65,17 +71,17 @@
 
         #region Private Helpers
 
-        private void Initialize(IServiceAccountCredentials credentials, GoogleServiceAccess access)
+        private void Initialize(IServiceAccountCredentials credentials, GoogleServiceAccess access, IFirebaseConfiguration configuration = null)
         {
             _requestedAccess = access;
             _credentials = credentials ?? throw new ArgumentNullException(nameof(credentials));
             _auth = new FirebaseAdminAuth();
 
             if (GoogleServiceAccess.DatabaseOnly == (_requestedAccess & GoogleServiceAccess.DatabaseOnly))
-                _database = new FirebaseAdminDatabase(_auth, _credentials);
+                _database = new FirebaseAdminDatabase(_auth, _credentials, configuration);
 
             if (GoogleServiceAccess.StorageOnly == (_requestedAccess & GoogleServiceAccess.StorageOnly))
-                _storage = new GoogleCloudStorage(_auth, _credentials);
+                _storage = new GoogleCloudStorage(_auth, _credentials, configuration);
         }
 
         #endregion

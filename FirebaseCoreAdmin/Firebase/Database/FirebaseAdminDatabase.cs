@@ -10,9 +10,13 @@
     {
         private IFirebaseHttpClient _httpClient;
 
-        public FirebaseAdminDatabase(IFirebaseAdminAuth auth, IServiceAccountCredentials credentials)
+        public FirebaseAdminDatabase(IFirebaseAdminAuth auth, IServiceAccountCredentials credentials, IFirebaseConfiguration configuration)
         {
-            var firebaseConfiguration = new DefaultFirebaseConfiguration(GoogleServiceAccess.DatabaseOnly);
+            IFirebaseConfiguration firebaseConfiguration = new DefaultFirebaseConfiguration(GoogleServiceAccess.DatabaseOnly);
+            if (configuration != null)
+            {
+                firebaseConfiguration = configuration;
+            }
 
             var firebaseAuthority = new Uri($"https://{credentials.GetProjectId()}.{firebaseConfiguration.FirebaseHost}/", UriKind.Absolute);
             _httpClient = new FirebaseHttpClient(credentials, firebaseConfiguration, firebaseAuthority);
